@@ -1,6 +1,6 @@
 object GtaEditor: TGtaEditor
-  Left = 298
-  Top = 100
+  Left = 303
+  Top = 28
   AutoScroll = False
   Caption = 'SA-MP: Map Construction'
   ClientHeight = 960
@@ -4168,8 +4168,6 @@ object GtaEditor: TGtaEditor
     Font.Height = -13
     Font.Name = 'Courier New'
     Font.Style = []
-    ParentColor = False
-    ParentFont = False
     TabOrder = 4
     Visible = False
     Gutter.Font.Charset = DEFAULT_CHARSET
@@ -4178,8 +4176,10 @@ object GtaEditor: TGtaEditor
     Gutter.Font.Name = 'Courier New'
     Gutter.Font.Style = []
     Gutter.Visible = False
+    Gutter.Width = 0
     RightEdge = 0
     ScrollBars = ssVertical
+    FontSmoothing = fsmNone
   end
   object imgipls: TMemo
     Left = 204
@@ -5885,8 +5885,6 @@ object GtaEditor: TGtaEditor
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
-      ParentColor = False
-      ParentFont = False
       TabOrder = 1
       Gutter.Font.Charset = DEFAULT_CHARSET
       Gutter.Font.Color = clWindowText
@@ -5894,8 +5892,10 @@ object GtaEditor: TGtaEditor
       Gutter.Font.Name = 'Courier New'
       Gutter.Font.Style = []
       Gutter.Visible = False
+      Gutter.Width = 0
       ReadOnly = True
       ScrollBars = ssVertical
+      FontSmoothing = fsmNone
     end
     object mdl_name: TEdit
       Left = 88
@@ -5917,8 +5917,6 @@ object GtaEditor: TGtaEditor
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
-      ParentColor = False
-      ParentFont = False
       TabOrder = 3
       Gutter.Font.Charset = DEFAULT_CHARSET
       Gutter.Font.Color = clWindowText
@@ -5926,8 +5924,10 @@ object GtaEditor: TGtaEditor
       Gutter.Font.Name = 'Courier New'
       Gutter.Font.Style = []
       Gutter.Visible = False
+      Gutter.Width = 0
       ReadOnly = True
       ScrollBars = ssVertical
+      FontSmoothing = fsmNone
     end
     object inp_txdname: TEdit
       Left = 88
@@ -6003,8 +6003,6 @@ object GtaEditor: TGtaEditor
       Font.Height = -13
       Font.Name = 'Courier New'
       Font.Style = []
-      ParentColor = False
-      ParentFont = False
       TabOrder = 7
       Gutter.Font.Charset = DEFAULT_CHARSET
       Gutter.Font.Color = clWindowText
@@ -6012,8 +6010,10 @@ object GtaEditor: TGtaEditor
       Gutter.Font.Name = 'Courier New'
       Gutter.Font.Style = []
       Gutter.Visible = False
+      Gutter.Width = 0
       ReadOnly = True
       ScrollBars = ssVertical
+      FontSmoothing = fsmNone
     end
     object Panel38: TPanel
       Left = 4
@@ -6191,7 +6191,6 @@ object GtaEditor: TGtaEditor
   end
   object ThreadedTimer3: TThreadedTimer
     Interval = 100
-    Priority = tpLowest
     OnTimer = ThreadedTimer3Timer
     Left = 330
     Top = 613
