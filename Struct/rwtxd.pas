@@ -34,9 +34,7 @@ type
 
 implementation
 
-{$IFDEF map_editor}
 uses u_edit;
-{$ENDIF}
 
 
 { Ttxdloader }

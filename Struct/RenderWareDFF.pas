@@ -410,9 +410,7 @@ var
 
 implementation
 
-{$IFDEF map_editor}
 uses u_edit;
-{$ENDIF}
 
 function min(a, b: single): single;
 begin
@@ -1063,8 +1061,6 @@ begin
 
   used:= true;
 
-  {$IFDEF map_editor}
-
   if (DLID = 0) and (texreportonly = false) and (highlight <> hl_selected) then
   begin
 		makeinstance(highlight);
@@ -1088,8 +1084,6 @@ begin
 
   end;
 
-  {$ENDIF}
-
   used:= false;
 
 end;
@@ -1103,8 +1097,6 @@ var
   ttex: gluint;
   Normals: byte;
 begin
-
-{$IFDEF map_editor}
 
 // filter out car lods.
 if (lowercase(Clump[in_clump].FrameList.Data.Frame[in_frame].Name) <> '') then begin
@@ -1166,12 +1158,10 @@ end;
 
           if texreportonly = True then
 		  begin
-		  {$IFDEF map_editor}
 //						if MaterialList.Material[MaterialSplit.Split[i].MaterialIndex].Texture.Name <> '' then
 							gtaeditor.list_dfftextures.Lines.add(format('Material: %d split: %d Tex: %s', [ MaterialSplit.Split[i].MaterialIndex, i, MaterialList.Material[MaterialSplit.Split[i].MaterialIndex].Texture.Name ]) );
 //						if MaterialList.Material[MaterialSplit.Split[i].MaterialIndex].Texture.Desc <> '' then
 							gtaeditor.list_dfftextures.Lines.add(format('Material: %d split: %d Alp: %s', [ MaterialSplit.Split[i].MaterialIndex, i, MaterialList.Material[MaterialSplit.Split[i].MaterialIndex].Texture.Name ]) );
-          {$ENDIF}
 		  end
           else
           begin
@@ -1327,7 +1317,6 @@ end;
 
   // now pop the matrix, so we don't affect siblings
   glPopMatrix;
-{$ENDIF}
 end;
 
 
@@ -1353,7 +1342,6 @@ var
   wantedmodel: string;
   fi:   boolean;
 begin
-{$IFDEF map_editor}
 
 // the IDE vehicle tire size or something?
 //  glTranslatef(0, 0, wheelzchange / 2); // -> looks bad (not really)
@@ -1408,7 +1396,6 @@ begin
 
   end;
 
-{$ENDIF}
 end;
 
 end.
