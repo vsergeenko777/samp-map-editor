@@ -5710,16 +5710,18 @@ begin
   updateeditorfromipl;
 
 	iadv_iden.Text := IntToStr(city.IPL[selipl].InstObjects[selitem].id);
-	mdl_name.Text := obj.ModelName;
+	mdl_name.Text := obj.ModelName + '.dff (' + extractfilename(city.imgfile[obj.modelinimg]) + ')';
 	ainp_interior.Text := IntToStr(city.IPL[selipl].InstObjects[selitem].int_id);
-	extras.Clear;
 
-  extras.Lines.add(format('item %d lod %d', [selitem, city.IPL[selipl].InstObjects[selitem].lod]));
+	extras.Clear;
+  extras.Lines.add(format('Item %d, LOD %d (%s)', [selitem, city.IPL[selipl].InstObjects[selitem].lod, extractfilename(city.IPL[selipl].filename)]));
 
   if city.IPL[selipl].InstObjects[selitem].lod <> -1 then
-    extras.Lines.add(format('lod info: ide %d', [
+    extras.Lines.add(format('LOD info: IDE %d', [
       city.IPL[selipl].InstObjects[city.IPL[selipl].InstObjects[selitem].lod].id
       ]));
+
+  extras.Lines.add('');
 
   if city.idemapping[city.IPL[selipl].InstObjects[selitem].id] <> nil then
   begin
@@ -5760,7 +5762,7 @@ begin
   if lmi <> -1 then
     (GtaObject.Components[lmi] as TDFFUnit).model.glDraw(nil, nil, True, 0, nightmode, false);
 
-  inp_txdname.Text := obj.TextureName;
+  inp_txdname.Text := obj.TextureName + '.txd (' + extractfilename(city.imgfile[obj.txdinimg]) + ')';
 
   lmi := city.IPL[selipl].InstObjects[selitem].LoadedModelIndex;
 
