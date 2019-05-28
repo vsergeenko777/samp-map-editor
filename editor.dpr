@@ -18,7 +18,7 @@ uses
   U_main in 'U_main.pas' {wnd_about},
   ColObject in 'ColObject.pas',
   Newton in 'Newton.pas',
-  u_sowcode in 'u_sowcode.pas' {wnd_showcode},
+  u_showcode in 'u_showcode.pas' {wnd_showcode},
   uHashedStringList in 'uHashedStringList.pas',
   BitUnit in 'BitUnit.pas',
   u_carcolors in 'u_carcolors.pas' {wnd_carcolorpicker},

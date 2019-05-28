@@ -944,7 +944,7 @@ function EnumDisplayMonitors(hdc: HDC; lprcIntersect: PRect; lpfnEnumProc: TScre
 
 implementation
 
-uses U_main, u_sowcode, u_carcolors, u_report;
+uses U_main, u_showcode, u_carcolors, u_report;
 
 {$R *.DFM}
 
