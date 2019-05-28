@@ -2841,9 +2841,7 @@ begin
         TmpStr := Reg.ReadString('ExePath');
     end;
     Reg.CloseKey;
-
-    TmpStr := copy(TmpStr, 2, length(TmpStr) - 2);
-
+    
     if FileExists(TmpStr) = True then
     begin
       working_gta_dir := extractfiledir(TmpStr);
