@@ -5163,6 +5163,7 @@ var
   stringhere: string;
   split2:     integer;
   prompt:     string;
+  modelid:    integer;
 begin
 
   if (mouse3d[0] = 0) and (mouse3d[1] = 0) and (mouse3d[2] = 0) then
@@ -5183,7 +5184,16 @@ begin
 
   if InputQuery('Add object', 'Enter IDE number', stringhere) = True then
   begin
-    insertobject(strtointdef(stringhere, 2000), mouse3d[0], mouse3d[1], mouse3d[2]);
+    modelid := strtointdef(stringhere, 2000);
+
+    if (modelid >= 0) and (modelid < 20000) then
+    begin
+      insertobject(modelid, mouse3d[0], mouse3d[1], mouse3d[2]);
+    end
+    else
+    begin
+      ShowMessage('Invalid IDE number');
+    end
   end;
 
   GlPanel.SetFocus;
