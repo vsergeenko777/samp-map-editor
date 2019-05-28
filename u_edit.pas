@@ -2950,25 +2950,41 @@ begin
 
   end;
 
-  IMGLoadImg(PChar(city.imgfile[0]));
-  lastimg := 0;
-
-  for i := 0 to City.imglist[0].Count - 1 do
+  for j := high(City.imglist) downto 0 do
   begin
+    if (City.imgfile[j] = '') then
+      continue;
 
-    if pos('.ipl', City.imglist[0][i]) <> 0 then
-      if imgipls.Lines.IndexOf(City.imglist[0][i]) = -1 then
+    statuslabel.Caption := 'Loading IPL info from: ' + extractfilename(City.imgfile[j]);
+    application.ProcessMessages;
+
+    switch2img(j);
+
+    if (City.imglist[j].Count < 1) then
+    begin
+      logger.Lines.add(format('%s index %d has no data: %d', [City.imgfile[j], j, City.imglist[j].Count]));
+      continue;
+    end;
+
+    for i := 0 to City.imglist[j].Count - 1 do
+    begin
+      if pos('.ipl', City.imglist[j][i]) <> 0 then
+      if imgipls.Lines.IndexOf(City.imglist[j][i]) = -1 then
       begin
-
-        statuslabel.Caption := 'BinIPL: ' + City.imglist[0][i];
+        statuslabel.Caption := 'Loading IPL info from: ' + extractfilename(City.imgfile[j]) + ', parsing IPL: ' + City.imglist[j].Strings[i];
+        logger.Lines.add(statuslabel.Caption);
         application.ProcessMessages;
-
-        tmpname := GetTempDir + '\' + City.imglist[0][i];
+        
+        tmpname := GetTempDir + '\' + City.imglist[j][i];
         IMGExportFile(i, PChar(tmpname));
         city.loadfile('IPL', tmpname, True);
         deletefile(tmpname);
       end;
+    end;
   end;
+
+  IMGLoadImg(PChar(city.imgfile[0]));
+  lastimg := 0;
 
   statuslabel.Caption := 'Processing LOD hierarchy';
   application.ProcessMessages;
