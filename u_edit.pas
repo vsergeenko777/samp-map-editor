@@ -2858,7 +2858,7 @@ begin
     end;
   end;
 
-  HFileRes := CreateFile(PChar(working_gta_dir + '\models\gta3.img'), GENERIC_READ or GENERIC_WRITE, 0, nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+  HFileRes := CreateFile(PChar(working_gta_dir + '\models\gta3.img'), GENERIC_READ, 0, nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   canopen  := (HFileRes = INVALID_HANDLE_VALUE);
   if not canopen then
   begin
