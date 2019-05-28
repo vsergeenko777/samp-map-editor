@@ -20,10 +20,12 @@ type
     Splitter1: TSplitter;
     CheckBox2: TCheckBox;
     brn_rgen: TSpeedButton;
+    RadioButton2: TRadioButton;
     procedure btn_exportClick(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
     procedure brn_rgenClick(Sender: TObject);
     procedure CheckBox2Click(Sender: TObject);
+    procedure RadioButton2Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -59,6 +61,11 @@ gtaeditor.gencode()
 end;
 
 procedure Twnd_showcode.CheckBox2Click(Sender: TObject);
+begin
+gtaeditor.gencode()
+end;
+
+procedure Twnd_showcode.RadioButton2Click(Sender: TObject);
 begin
 gtaeditor.gencode()
 end;

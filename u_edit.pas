@@ -4767,25 +4767,121 @@ begin
   inp_ide.Text := IntToStr(StrToInt(inp_ide.Text) + 1);
 end;
 
+function gtarot2matrix3x3(x, y, z: single): TMatrix3f;
+var
+  v5,
+  v6,
+  v7,
+  v8,
+  v9,
+  v10: double;
+
+  v11,
+  v12,
+  v13: single;
+
+begin
+
+  v5 := cos(x);
+//  LODWORD(this->pos.X) = 0;
+//  LODWORD(this->pos.Y) = 0;
+//  LODWORD(this->pos.Z) = 0;
+  v6 := sin(x);
+  v11 := cos(y);
+  v7 := sin(y);
+  v8 := cos(z);
+  v9 := sin(z);
+  v12 := v9;
+  v10 := v9 * v6;
+  v13 := v8 * v6;
+
+  result[0,0] := v8 * v11 - v10 * v7;
+  result[0,1] := v13 * v7 + v12 * v11;
+  result[0,2] := -(v7 * v5);
+  result[1,0] := -(v12 * v5);
+  result[1,1] := v8 * v5;
+  result[1,2] := v6;
+  result[2,0] := v8 * v7 + v10 * v11;
+  result[2,1] := v12 * v7 - v13 * v11;
+  result[2,2] := v11 * v5;
+
+  {
+  this->right.X = v8 * v11 - v10 * v7;
+  this->right.Y = v13 * v7 + v12 * v11;
+  this->right.Z = -(v7 * v5);
+  this->up.X = -(v12 * v5);
+  this->up.Y = v8 * v5;
+  this->up.Z = v6;
+  this->at.X = v8 * v7 + v10 * v11;
+  this->at.Y = v12 * v7 - v13 * v11;
+  this->at.Z = v11 * v5;
+  }
+
+end;
+
+procedure matrix3f2quaternion(m: TMatrix3f; var rx, ry, rz, rw: single);
+var
+  tr: single;
+  S: single;
+begin
+
+tr:= m[0,0] + m[1,1] + m[2,2];
+
+if (tr > 0) then begin
+  S := sqrt(tr+1.0) * 2; // S=4*rw
+  rw := 0.25 * S;
+  rx := (m[2,1] - m[1,2]) / S;
+  ry := (m[0,2] - m[2,0]) / S;
+  rz := (m[1,0] - m[0,1]) / S;
+end else if ((m[0,0] > m[1,1]) and (m[0,0] > m[2,2])) then begin
+  S := sqrt(1.0 + m[0,0] - m[1,1] - m[2,2]) * 2; // S:=4*rx
+  rw := (m[2,1] - m[1,2]) / S;
+  rx := 0.25 * S;
+  ry := (m[0,1] + m[1,0]) / S;
+  rz := (m[0,2] + m[2,0]) / S;
+end else if (m[1,1] > m[2,2]) then begin
+  S := sqrt(1.0 + m[1,1] - m[0,0] - m[2,2]) * 2; // S:=4*ry
+  rw := (m[0,2] - m[2,0]) / S;
+  rx := (m[0,1] + m[1,0]) / S;
+  ry := 0.25 * S;
+  rz := (m[1,2] + m[2,1]) / S;
+end else begin
+  S := sqrt(1.0 + m[2,2] - m[0,0] - m[1,1]) * 2; // S:=4*rz
+  rw := (m[1,0] - m[0,1]) / S;
+  rx := (m[0,2] + m[2,0]) / S;
+  ry := (m[1,2] + m[2,1]) / S;
+  rz := 0.25 * S;
+end;
+end;
+
 procedure TGtaEditor.gencode();
 var
   i, l:   integer;
   ftext:  string;
   center: t3drect;
   realcenter: TVector3f;
+  obj: Pobjs;
+  quatX: single;
+  quatY: single;
+  quatZ: single;
+  quatW: single;
+  tmp: TMatrix3f;
 begin
 
   wnd_showcode.readwriter.Lines.Clear;
   wnd_showcode.lin_cars.Lines.Clear;
   DecimalSeparator := '.';
 
-  ftext := 'CreateObject(%d, %0.5f, %0.5f, %0.5f,   %0.5f, %0.5f, %0.5f);';
+  ftext := 'CreateObject(%d, %0.5f, %0.5f, %0.5f, %0.5f, %0.5f, %0.5f);';
 
   if wnd_showcode.CheckBox1.Checked = True then
-    ftext := '%d, %0.5f, %0.5f, %0.5f,   %0.5f, %0.5f, %0.5f;';
+    ftext := '%d, %0.5f, %0.5f, %0.5f, %0.5f, %0.5f, %0.5f;';
+
+  if wnd_showcode.RadioButton2.Checked = True then
+    ftext := '%d, %s, 0, %0.5f, %0.5f, %0.5f, %0.5f, %0.5f, %0.5f, %.05f, -1';
 
   if wnd_showcode.CDO.Checked = True then
-    ftext := 'CreateDynamicObject(%d, %0.5f, %0.5f, %0.5f,   %0.5f, %0.5f, %0.5f);';
+    ftext := 'CreateDynamicObject(%d, %0.5f, %0.5f, %0.5f, %0.5f, %0.5f, %0.5f);';
 
   // #1: calculate center of objects, #2: use that as relative coords for stuff.
   if wnd_showcode.CheckBox2.Checked = True then
@@ -4817,11 +4913,45 @@ begin
 
             if wnd_showcode.CheckBox2.Checked = True then
             begin
-              wnd_showcode.readwriter.Lines.add(format(ftext, [id, Location[0] - realcenter[0], Location[1] - realcenter[1], Location[2] - realcenter[2], rux, ruy, ruz]));
+              if wnd_showcode.RadioButton2.Checked = True then
+              begin
+                tmp := gtarot2matrix3x3(Math.degtorad(rux), Math.degtorad(ruy), Math.degtorad(ruz));
+                matrix3f2quaternion(tmp, quatX, quatY, quatZ, quatW);
+
+                obj := findIDE(id, False);
+                if obj = nil then
+		            begin
+                  wnd_showcode.readwriter.Lines.add(format(ftext, [id, 'null', Location[0] - realcenter[0], Location[1] - realcenter[1], Location[2] - realcenter[2], quatX, quatY, quatZ, quatW]));
+                end
+                else
+                begin
+                  wnd_showcode.readwriter.Lines.add(format(ftext, [id, obj.ModelName, Location[0] - realcenter[0], Location[1] - realcenter[1], Location[2] - realcenter[2], quatX, quatY, quatZ, quatW]));
+                end
+              end
+              else
+              begin
+                wnd_showcode.readwriter.Lines.add(format(ftext, [id, Location[0] - realcenter[0], Location[1] - realcenter[1], Location[2] - realcenter[2], rux, ruy, ruz]));
+              end
+            end
+            else if wnd_showcode.RadioButton2.Checked = True then
+            begin
+              tmp := gtarot2matrix3x3(Math.degtorad(rux), Math.degtorad(ruy), Math.degtorad(ruz));
+              matrix3f2quaternion(tmp, quatX, quatY, quatZ, quatW);
+
+              obj := findIDE(id, False);
+              if obj = nil then
+		          begin
+                wnd_showcode.readwriter.Lines.add(format(ftext, [id, 'null', Location[0], Location[1], Location[2], quatX, quatY, quatZ, quatW]));
+              end
+              else
+              begin
+                wnd_showcode.readwriter.Lines.add(format(ftext, [id, obj.ModelName, Location[0], Location[1], Location[2], quatX, quatY, quatZ, quatW]));
+              end
             end
             else
+            begin
               wnd_showcode.readwriter.Lines.add(format(ftext, [id, Location[0], Location[1], Location[2], rux, ruy, ruz]));
-
+            end
           end;
         end;
 

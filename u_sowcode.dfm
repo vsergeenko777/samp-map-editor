@@ -1,7 +1,7 @@
 object wnd_showcode: Twnd_showcode
-  Left = 998
-  Top = 156
-  Width = 661
+  Left = 487
+  Top = 349
+  Width = 655
   Height = 545
   Caption = 'Pawn Code'
   Color = clBtnFace
@@ -16,8 +16,8 @@ object wnd_showcode: Twnd_showcode
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 0
-    Top = 262
-    Width = 653
+    Top = 250
+    Width = 639
     Height = 3
     Cursor = crVSplit
     Align = alBottom
@@ -26,8 +26,8 @@ object wnd_showcode: Twnd_showcode
   object readwriter: TMemo
     Left = 0
     Top = 27
-    Width = 653
-    Height = 235
+    Width = 639
+    Height = 223
     Align = alClient
     ScrollBars = ssBoth
     TabOrder = 0
@@ -35,7 +35,7 @@ object wnd_showcode: Twnd_showcode
   object Panel5: TPanel
     Left = 0
     Top = 0
-    Width = 653
+    Width = 639
     Height = 27
     Align = alTop
     BevelInner = bvRaised
@@ -45,7 +45,7 @@ object wnd_showcode: Twnd_showcode
     object Image4: TImage
       Left = 2
       Top = 2
-      Width = 649
+      Width = 635
       Height = 23
       Align = alClient
       Picture.Data = {
@@ -160,7 +160,7 @@ object wnd_showcode: Twnd_showcode
       OnClick = brn_rgenClick
     end
     object CheckBox1: TRadioButton
-      Left = 275
+      Left = 408
       Top = 5
       Width = 70
       Height = 17
@@ -180,7 +180,7 @@ object wnd_showcode: Twnd_showcode
       OnClick = CheckBox1Click
     end
     object CDO: TRadioButton
-      Left = 350
+      Left = 276
       Top = 5
       Width = 127
       Height = 17
@@ -189,7 +189,7 @@ object wnd_showcode: Twnd_showcode
       OnClick = CheckBox1Click
     end
     object CheckBox2: TCheckBox
-      Left = 483
+      Left = 534
       Top = 5
       Width = 97
       Height = 17
@@ -197,11 +197,20 @@ object wnd_showcode: Twnd_showcode
       TabOrder = 3
       OnClick = CheckBox2Click
     end
+    object RadioButton2: TRadioButton
+      Left = 483
+      Top = 5
+      Width = 46
+      Height = 17
+      Caption = 'IPL'
+      TabOrder = 4
+      OnClick = CheckBox1Click
+    end
   end
   object lin_cars: TMemo
     Left = 0
-    Top = 265
-    Width = 653
+    Top = 253
+    Width = 639
     Height = 253
     Align = alBottom
     ScrollBars = ssBoth
