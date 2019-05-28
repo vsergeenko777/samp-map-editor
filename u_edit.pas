@@ -3786,15 +3786,18 @@ begin
 		makeundo(selipl, selitem, 1, 'edited parameters');
 
 	if city.IPL[selipl].InstObjects[selitem].id <> strtointdef(inp_ide.Text, 0) then
+  begin
+    if (strtointdef(inp_ide.Text, 0) >= 0) and (strtointdef(inp_ide.Text, 0) < 20000) then
     begin
-	  city.IPL[selipl].InstObjects[selitem].id := strtointdef(inp_ide.Text, 0);
-	  city.IPL[selipl].InstObjects[selitem].LoadedModelIndex := -1;
+	    city.IPL[selipl].InstObjects[selitem].id := strtointdef(inp_ide.Text, 0);
+	    city.IPL[selipl].InstObjects[selitem].LoadedModelIndex := -1;
+    end;
 	end;
 
     city.IPL[selipl].InstObjects[selitem].draw_distance:= StrToFloatDef(fobj_frawdistance.Text, 500.0);
 
-	city.IPL[selipl].InstObjects[selitem].Location[0] := textparser.fltindex(0);
-	city.IPL[selipl].InstObjects[selitem].Location[1] := textparser.fltindex(1);
+	  city.IPL[selipl].InstObjects[selitem].Location[0] := textparser.fltindex(0);
+	  city.IPL[selipl].InstObjects[selitem].Location[1] := textparser.fltindex(1);
     city.IPL[selipl].InstObjects[selitem].Location[2] := textparser.fltindex(2);
 
     textparser.setworkspace(inp_rotations.Text);
