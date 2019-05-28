@@ -29,6 +29,7 @@
 editor_cameras
 editor_objects
 editor_views
+editor_prefabs
 
 # Delphi compiler-generated binaries (safe to delete)
 *.exe
