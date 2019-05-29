@@ -2,7 +2,7 @@ unit u_Objects;
 
 interface
 
-uses classes, graphics, dialogs, filectrl, geometry, gtadll, sysutils, textparser, vectortypes, windows, uHashedStringList, inifiles, math, vectorgeometry;
+uses classes, graphics, dialogs, filectrl, geometry, gtadll, sysutils, textparser, vectortypes, windows, uHashedStringList, inifiles, math, vectorgeometry, rwtxd;
 
 type
 
@@ -71,8 +71,8 @@ type
 
   TINST = class
     id:   integer;
-	LoadedModelIndex: integer;
-	draw_distance: single;
+	  LoadedModelIndex: integer;
+	  draw_distance: single;
     Name: string; // ignore - unused, don't load, use ID
     int_id: integer;
     Location: Tvector3F;
@@ -182,17 +182,17 @@ end;
   TGTAMAP = class(TObject)
   public
 
-  	imgfile: array[0..5] of string;
-	imglist: array[0..5] of THashedStringList;
+    imgfile: array[0..5] of string;
+    imglist: array[0..5] of THashedStringList;
 
     Water: array of TWaterGeom;
-
-    IDE:     array of TIDEFILE;
-    IPL:     array of TIPLFILE;
+    IDE: array of TIDEFILE;
+    IPL: array of TIPLFILE;
     loaded: boolean;
     idetable: TurboHashedStringList;
     idemapping: array of Tobject;
     colors: Tcarcolsfile;
+    globaltextures: TList;
 
     procedure loadcolldata(collfileidx: integer; inimg: integer);
     procedure loadfile(typ, filen: string; secondarybinipl: boolean);
@@ -618,6 +618,7 @@ var
 binipl: integer;
 z: integer;
 streamname: string;
+newtex: Ttxdunit;
 begin
   if typ = 'IPL' then
   begin
@@ -682,6 +683,20 @@ begin
     setlength(ide, length(ide) + 1);
     ide[high(ide)] := TIDEFILE.Create;
     ide[high(ide)].loadfromfile(filen, imglist[0]);
+  end
+  else
+  if typ = 'TEXDICTION' then
+  begin
+    newtex := Ttxdunit.Create(GtaObject);
+    newtex.texture := Ttxdloader.Create;
+    newtex.texture.loadfromfile(filen);
+    newtex.filename := extractfilename(filen);
+    newtex.refcount := 1; // always at least 1 so it doesnt get unloaded.
+    if globaltextures = nil then
+    begin
+      globaltextures := TList.Create;
+    end;
+    globaltextures.Add(newtex);
   end
   else
   begin

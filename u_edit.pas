@@ -2127,6 +2127,7 @@ var
     normal:  TVector3f;
     verts:   array[0..3] of TVector3f;
     textures: TList;
+    gtxdidx: integer;
   begin
 
     if IplItem = -1 then
@@ -2277,6 +2278,17 @@ var
                   textures.Add((GtaObject.Components[(GtaObject.Components[LoadedModelIndex] as TDFFUnit).txdref] as TTxdUnit).texture);
                 end;
                 textures.Add((GtaObject.Components[vehicletxd] as TTxdUnit).texture);
+
+                if city.globaltextures <> nil then
+                begin
+                  if city.globaltextures.Count > 0 then
+                  begin
+                    for gtxdidx := 0 to city.globaltextures.Count-1 do
+                    begin
+                      textures.Add(TTxdUnit(city.globaltextures[gtxdidx]).texture);
+                    end;
+                  end;
+                end;
 
                 (GtaObject.Components[LoadedModelIndex] as TDFFUnit).model.glDraw(textures, False, hilitemodel, nightcolors, id <= 611);
               end;
@@ -2779,7 +2791,8 @@ var
   //  model:    TDffLoader;
   tmpname:  string;
   //  txd:      Ttxdloader;
-  DataList: TStrings;
+  DefaultDatDataList: TStrings;
+  GtaDatDataList: TStrings;
   //  tmpstr:   string;
   newtex:   Ttxdunit;
   canopen:  boolean;
@@ -2871,22 +2884,25 @@ begin
 
   pnlhelp.Visible := False;
 
-  DataList := TStringList.Create;
+  DefaultDatDataList := TStringList.Create;
+  DefaultDatDataList.loadfromfile(working_gta_dir + '\data\default.dat');
 
-  DataList.loadfromfile(working_gta_dir + '\data\gta.dat');
+  GtaDatDataList := TStringList.Create;
+  GtaDatDataList.loadfromfile(working_gta_dir + '\data\gta.dat');
 
   City := TGTAMAP.Create;
   city.loaded := False;
 
   city.idetable := TurboHashedStringList.Create;
 
-  city.loadimg(working_gta_dir + '\models\gta3.img',
+  city.loadimg(
+    working_gta_dir + '\models\gta3.img',
     working_gta_dir + '\models\gta_int.img',
     working_gta_dir + '\samp\samp.img',
 		working_gta_dir + '\samp\SAMPCOL.img',
 		working_gta_dir + '\samp\custom.img',
 		working_gta_dir + '\models\cutscene.img',
-		);
+  );
 
   city.loadwater(working_gta_dir + '\data\water.dat');
   city.loadcolors(working_gta_dir + '\data\carcols.dat');
@@ -2913,11 +2929,7 @@ begin
 {
   exit;
 }
-
-	city.loadfile('IDE', working_gta_dir + '\data\peds.ide', False);
-	city.loadfile('IDE', working_gta_dir + '\data\vehicles.ide', False);
-	city.loadfile('IDE', working_gta_dir + '\data\default.ide', False);
-
+  
 	if fileexists(working_gta_dir + '\samp\samp.ide') = True then
 		city.loadfile('IDE', working_gta_dir + '\samp\samp.ide', False);
 
@@ -2925,28 +2937,36 @@ begin
     city.loadfile('IDE', working_gta_dir + '\samp\custom.ide', False);
 
   city.loadfile('IDE', working_gta_dir + '\data\maps\veh_mods\veh_mods.ide', False);
-
-  // load generics
   city.loadfile('IDE', working_gta_dir + '\data\maps\txd.ide', False);
 
-  ProgressBar1.max := DataList.Count;
+  ProgressBar1.max := GtaDatDataList.Count;
 
-  for i := 0 to DataList.Count - 1 do
+  for i := 0 to DefaultDatDataList.Count - 1 do
   begin
-
-    textparser.setworkspace(stripcomments('#', DataList[i]));
+    textparser.setworkspace(stripcomments('#', DefaultDatDataList[i]));
 
     if trim(textparser.indexed(0)) <> '' then
     begin
       statuslabel.Caption := 'Section: ' + textparser.indexed(0) + ' File: ' + textparser.indexed(1);
 			application.ProcessMessages;
-//      showmessage( textparser.indexed(1));
-
       city.loadfile(textparser.indexed(0), working_gta_dir + '\' + textparser.indexed(1), False);
     end;
 
     ProgressBar1.position := i;
+  end;
 
+  for i := 0 to GtaDatDataList.Count - 1 do
+  begin
+    textparser.setworkspace(stripcomments('#', GtaDatDataList[i]));
+
+    if trim(textparser.indexed(0)) <> '' then
+    begin
+      statuslabel.Caption := 'Section: ' + textparser.indexed(0) + ' File: ' + textparser.indexed(1);
+			application.ProcessMessages;
+      city.loadfile(textparser.indexed(0), working_gta_dir + '\' + textparser.indexed(1), False);
+    end;
+
+    ProgressBar1.position := i;
   end;
 
   for j := high(City.imglist) downto 0 do
@@ -3069,7 +3089,8 @@ begin
 	btn_load.hide;
 	btn_loadwithcols.hide;
 
-  DataList.Clear;
+  GtaDatDataList.Clear;
+  DefaultDatDataList.Clear;
 
   statuslabel.left := ProgressBar1.left;
   ProgressBar1.Visible := False;
@@ -3986,6 +4007,7 @@ var
   jpg:  TJPEGImage;
   fobj: Pobjs;
   textures: TList;
+  gtxdidx: integer;
 
   // finding optimal distance..
   obj, splits, vert, vart: integer;
@@ -4112,6 +4134,17 @@ begin
       textures.Add((GtaObject.Components[(GtaObject.Components[rendermodel(fobj.ID)] as TDFFUnit).txdref] as TTxdUnit).texture);
     end;
     textures.Add((GtaObject.Components[vehicletxd] as TTxdUnit).texture);
+
+    if city.globaltextures <> nil then
+    begin
+      if city.globaltextures.Count > 0 then
+      begin
+        for gtxdidx := 0 to city.globaltextures.Count-1 do
+        begin
+          textures.Add(TTxdUnit(city.globaltextures[gtxdidx]).texture);
+        end;
+      end;
+    end;
 
     (GtaObject.Components[rendermodel(fobj.ID)] as TDFFUnit).model.glDraw(textures, False, 0, nightmode, false);
 
