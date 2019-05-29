@@ -400,9 +400,9 @@ type
     procedure DropDL;
     procedure Unload;
 
-    procedure glDraw(texture: Ttxdloader; sectexture: Ttxdloader; texreportonly: boolean; highlight: integer; nightcolors: boolean; plzdontinstance: boolean);
-    procedure glDrawRecurse(in_clump: longword; in_frame: longint; texture: Ttxdloader; sectexture: Ttxdloader; TheParent: boolean; texreportonly: boolean; highlight: integer; nightcolors: boolean; plzdontinstance: boolean);
-    procedure renderawheel(parent: string; texture: Ttxdloader; sectexture: Ttxdloader; plzdontinstance: boolean);
+    procedure glDraw(textures: TList; texreportonly: boolean; highlight: integer; nightcolors: boolean; plzdontinstance: boolean);
+    procedure glDrawRecurse(in_clump: longword; in_frame: longint; textures: TList; TheParent: boolean; texreportonly: boolean; highlight: integer; nightcolors: boolean; plzdontinstance: boolean);
+    procedure renderawheel(parent: string; textures: TList; plzdontinstance: boolean);
   end;
 
 var
@@ -1037,7 +1037,7 @@ begin
   Result := OutHeader;
 end;
 
-procedure Tdffloader.glDraw(texture: Ttxdloader; sectexture: Ttxdloader; texreportonly: boolean; highlight: integer; nightcolors: boolean; plzdontinstance: boolean);
+procedure Tdffloader.glDraw(textures: TList; texreportonly: boolean; highlight: integer; nightcolors: boolean; plzdontinstance: boolean);
 var
   J: longword;
 
@@ -1052,7 +1052,7 @@ begin
 	if (Clump[0].FrameList.Data.FrameCount > 0) then
 	  for I := 0 to Clump[0].FrameList.Data.FrameCount - 1 do
 		if (Clump[0].FrameList.Data.Frame[I].Parent = -1) then
-					glDrawRecurse(0, I, texture, sectexture, True, false, highlight, nightcolors, plzdontinstance);
+					glDrawRecurse(0, I, textures, True, false, highlight, nightcolors, plzdontinstance);
 
   glEndList;
 end;
@@ -1080,7 +1080,7 @@ begin
 			if (Clump[0].FrameList.Data.FrameCount > 0) then
 				for J := 0 to Clump[0].FrameList.Data.FrameCount - 1 do
 		  if (Clump[0].FrameList.Data.Frame[J].Parent = -1) then
-			glDrawRecurse(0, J, texture, sectexture, True, texreportonly, highlight, nightcolors, plzdontinstance);
+			glDrawRecurse(0, J, textures, True, texreportonly, highlight, nightcolors, plzdontinstance);
 
   end;
 
@@ -1088,7 +1088,7 @@ begin
 
 end;
 
-procedure Tdffloader.glDrawRecurse(in_clump: longword; in_frame: longint; texture: Ttxdloader; sectexture: Ttxdloader; TheParent: boolean; texreportonly: boolean; highlight: integer; nightcolors: boolean; plzdontinstance: boolean);
+procedure Tdffloader.glDrawRecurse(in_clump: longword; in_frame: longint; textures: TList; TheParent: boolean; texreportonly: boolean; highlight: integer; nightcolors: boolean; plzdontinstance: boolean);
 var
   I:    integer;
   Gn, OnC: longint;
@@ -1096,6 +1096,7 @@ var
   UV, Alp: boolean;
   ttex: gluint;
   Normals: byte;
+  tidx: integer;
 begin
 
 // filter out car lods.
@@ -1130,7 +1131,7 @@ end;
 
       // todo.. DON'T DO THIS ON BIKES!!!!!!!!!!!!!
 
-      renderawheel(Clump[in_clump].FrameList.Data.Frame[in_frame].Name, texture, sectexture, plzdontinstance);
+      renderawheel(Clump[in_clump].FrameList.Data.Frame[in_frame].Name, textures, plzdontinstance);
       glpopmatrix;
       exit;
     end;
@@ -1184,15 +1185,28 @@ end;
               end;
             end;
 
-            if texture <> nil then
+            if textures <> nil then
             begin
-              glenable(GL_TEXTURE_2D);
-              ttex := texture.findglid(MaterialList.Material[MaterialSplit.Split[i].MaterialIndex].Texture.Name);
+              if textures.Count > 0 then
+              begin
+                ttex := 0;
+                glenable(GL_TEXTURE_2D);
 
-              if ttex = 0 then // haven't found it.. look for more.
-                ttex := sectexture.findglid(MaterialList.Material[MaterialSplit.Split[i].MaterialIndex].Texture.Name);
+                for tidx := 0 to textures.Count-1 do
+                begin
+                  if textures[tidx] <> nil then
+                  begin
+                    ttex := Ttxdloader(textures[tidx]).findglid(MaterialList.Material[MaterialSplit.Split[i].MaterialIndex].Texture.Name);
 
-              glBindTexture(GL_TEXTURE_2D, ttex);
+                    if ttex <> 0 then
+                    begin
+                      Break;  
+                    end;
+                  end;  
+                end;
+                
+                glBindTexture(GL_TEXTURE_2D, ttex);
+              end;
             end;
 
             if isprim(MaterialList.Material[MaterialSplit.Split[i].MaterialIndex].Data.Color) or isterc(MaterialList.Material[MaterialSplit.Split[i].MaterialIndex].Data.Color) or islightcolor(MaterialList.Material[MaterialSplit.Split[i].MaterialIndex].Data.Color) or issec(MaterialList.Material[MaterialSplit.Split[i].MaterialIndex].Data.Color)
@@ -1305,13 +1319,13 @@ end;
           if (Clump[in_clump].FrameList.Data.Frame[Onc].Name[I - 2] = '_') and ((Clump[in_clump].FrameList.Data.Frame[Onc].Name[I - 1] = 'L') or (Clump[in_clump].FrameList.Data.Frame[Onc].Name[I - 1] = 'l')) then
           begin
             if (StrToIntDef(Clump[in_clump].FrameList.Data.Frame[Onc].Name[I], -1) <= 0) then
-							glDrawRecurse(in_clump, OnC, texture, sectexture, True, texreportonly, highlight, nightcolors, plzdontinstance);
+							glDrawRecurse(in_clump, OnC, textures, True, texreportonly, highlight, nightcolors, plzdontinstance);
 					end
           else if not ((Clump[in_clump].FrameList.Data.Frame[Onc].Name[1] = 'C') and (Clump[in_clump].FrameList.Data.Frame[Onc].Name[2] = 'o') and (Clump[in_clump].FrameList.Data.Frame[Onc].Name[3] = 'l')) then
-            glDrawRecurse(in_clump, OnC, texture, sectexture, False, texreportonly, highlight, nightcolors, plzdontinstance);
+            glDrawRecurse(in_clump, OnC, textures, False, texreportonly, highlight, nightcolors, plzdontinstance);
         end
         else
-          glDrawRecurse(in_clump, OnC, texture, sectexture, False, texreportonly, highlight, nightcolors, plzdontinstance);
+          glDrawRecurse(in_clump, OnC, textures, False, texreportonly, highlight, nightcolors, plzdontinstance);
       end;
     end;
 
@@ -1334,7 +1348,7 @@ begin
 
 end;
 
-procedure TDffLoader.renderawheel(parent: string; texture: Ttxdloader; sectexture: Ttxdloader; plzdontinstance: boolean);
+procedure TDffLoader.renderawheel(parent: string; textures: TList; plzdontinstance: boolean);
 var
   i, y: integer;
   wheelparent: integer;
@@ -1388,7 +1402,7 @@ begin
         if lowercase(clump[0].FrameList.Data.Frame[i].Name) = 'wheel_rf_dummy' then
           if clump[0].FrameList.Data.Frame[y].Parent = i then
           begin
-              gldrawrecurse(0, i, texture, sectexture, True, false, hl_normal, false, plzdontinstance);
+              gldrawrecurse(0, i, textures, True, false, hl_normal, false, plzdontinstance);
               break; // we rendered it already, don't render yosemite / feltzer odd wheels
           end;
 

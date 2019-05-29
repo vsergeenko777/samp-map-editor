@@ -2126,6 +2126,7 @@ var
     i, j, k: integer;
     normal:  TVector3f;
     verts:   array[0..3] of TVector3f;
+    textures: TList;
   begin
 
     if IplItem = -1 then
@@ -2270,24 +2271,28 @@ var
               end
               else
               begin
-				if (GtaObject.Components[LoadedModelIndex] as TDFFUnit).txdref <> -1 then
-					(GtaObject.Components[LoadedModelIndex] as TDFFUnit).model.glDraw((GtaObject.Components[(GtaObject.Components[LoadedModelIndex] as TDFFUnit).txdref] as TTxdUnit).texture, (GtaObject.Components[vehicletxd] as TTxdUnit).texture, False, hilitemodel, nightcolors, id <= 611)
-				else
-					(GtaObject.Components[LoadedModelIndex] as TDFFUnit).model.glDraw(nil, nil, False, hilitemodel, nightcolors, false);
-			   end;
+                if (GtaObject.Components[LoadedModelIndex] as TDFFUnit).txdref <> -1 then
+                begin
+                  textures := TList.Create;
+                  textures.Add((GtaObject.Components[(GtaObject.Components[LoadedModelIndex] as TDFFUnit).txdref] as TTxdUnit).texture);
+                  textures.Add((GtaObject.Components[vehicletxd] as TTxdUnit).texture);
+                  
+                  (GtaObject.Components[LoadedModelIndex] as TDFFUnit).model.glDraw(textures, False, hilitemodel, nightcolors, id <= 611)
+                end
+				        else
+                begin
+					        (GtaObject.Components[LoadedModelIndex] as TDFFUnit).model.glDraw(nil, False, hilitemodel, nightcolors, false);
+                end;
+              end;
 
               (GtaObject.Components[LoadedModelIndex] as TDFFUnit).lastdrawn := GetTickCount;
               (GtaObject.Components[LoadedModelIndex] as TDFFUnit).lastframe := fpsframes;
-
               (GtaObject.Components[LoadedModelIndex] as TDFFUnit).lastrendercoords := Location;
-
 
               if is_picking = True then
                 glPopName;
 
-
               glpopmatrix;
-
             end
             else
               LoadedModelIndex := -1; // no longer valid, got streamed out?
@@ -3984,6 +3989,7 @@ var
   bmp:  Tbitmap;
   jpg:  TJPEGImage;
   fobj: Pobjs;
+  textures: TList;
 
   // finding optimal distance..
   obj, splits, vert, vart: integer;
@@ -4105,10 +4111,13 @@ begin
     glDisable(gl_cull_face);
 
     if (GtaObject.Components[rendermodel(fobj.ID)] as TDFFUnit).txdref <> -1 then
-      (GtaObject.Components[rendermodel(fobj.ID)] as TDFFUnit).model.glDraw(
-        (GtaObject.Components[(GtaObject.Components[rendermodel(fobj.ID)] as TDFFUnit).txdref] as TTxdUnit).texture,
-        (GtaObject.Components[vehicletxd] as TTxdUnit).texture
-        , False, 0, nightmode, false);
+    begin
+      textures := TList.Create;
+      textures.Add((GtaObject.Components[(GtaObject.Components[rendermodel(fobj.ID)] as TDFFUnit).txdref] as TTxdUnit).texture);
+      textures.Add((GtaObject.Components[vehicletxd] as TTxdUnit).texture);
+
+      (GtaObject.Components[rendermodel(fobj.ID)] as TDFFUnit).model.glDraw(textures, False, 0, nightmode, false);
+    end;
 
     SwapBuffers(DC);
 
@@ -5773,7 +5782,7 @@ begin
   end;
 
   if lmi <> -1 then
-    (GtaObject.Components[lmi] as TDFFUnit).model.glDraw(nil, nil, True, 0, nightmode, false);
+    (GtaObject.Components[lmi] as TDFFUnit).model.glDraw(nil, True, 0, nightmode, false);
 
   inp_txdname.Text := obj.TextureName + '.txd (' + extractfilename(city.imgfile[obj.txdinimg]) + ')';
 
