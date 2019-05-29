@@ -5761,7 +5761,14 @@ begin
   updateeditorfromipl;
 
 	iadv_iden.Text := IntToStr(city.IPL[selipl].InstObjects[selitem].id);
-	mdl_name.Text := obj.ModelName + '.dff (' + extractfilename(city.imgfile[obj.modelinimg]) + ')';
+  if obj.modelinimg <> -1 then
+  begin
+	  mdl_name.Text := obj.ModelName + '.dff (' + extractfilename(city.imgfile[obj.modelinimg]) + ')';
+  end
+  else
+  begin
+    mdl_name.Text := obj.ModelName + '.dff (unknown)';
+  end;
 	ainp_interior.Text := IntToStr(city.IPL[selipl].InstObjects[selitem].int_id);
 
 	extras.Clear;
@@ -5813,7 +5820,14 @@ begin
   if lmi <> -1 then
     (GtaObject.Components[lmi] as TDFFUnit).model.glDraw(nil, True, 0, nightmode, false);
 
-  inp_txdname.Text := obj.TextureName + '.txd (' + extractfilename(city.imgfile[obj.txdinimg]) + ')';
+  if obj.txdinimg <> -1 then
+  begin
+    inp_txdname.Text := obj.TextureName + '.txd (' + extractfilename(city.imgfile[obj.txdinimg]) + ')';
+  end
+  else
+  begin
+    inp_txdname.Text := obj.TextureName + '.txd (unknown)';
+  end;
 
   lmi := city.IPL[selipl].InstObjects[selitem].LoadedModelIndex;
 
