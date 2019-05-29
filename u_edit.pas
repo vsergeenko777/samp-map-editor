@@ -2271,18 +2271,14 @@ var
               end
               else
               begin
+                textures := TList.Create;
                 if (GtaObject.Components[LoadedModelIndex] as TDFFUnit).txdref <> -1 then
                 begin
-                  textures := TList.Create;
                   textures.Add((GtaObject.Components[(GtaObject.Components[LoadedModelIndex] as TDFFUnit).txdref] as TTxdUnit).texture);
-                  textures.Add((GtaObject.Components[vehicletxd] as TTxdUnit).texture);
-                  
-                  (GtaObject.Components[LoadedModelIndex] as TDFFUnit).model.glDraw(textures, False, hilitemodel, nightcolors, id <= 611)
-                end
-				        else
-                begin
-					        (GtaObject.Components[LoadedModelIndex] as TDFFUnit).model.glDraw(nil, False, hilitemodel, nightcolors, false);
                 end;
+                textures.Add((GtaObject.Components[vehicletxd] as TTxdUnit).texture);
+
+                (GtaObject.Components[LoadedModelIndex] as TDFFUnit).model.glDraw(textures, False, hilitemodel, nightcolors, id <= 611);
               end;
 
               (GtaObject.Components[LoadedModelIndex] as TDFFUnit).lastdrawn := GetTickCount;
@@ -4110,14 +4106,14 @@ begin
 
     glDisable(gl_cull_face);
 
+    textures := TList.Create;
     if (GtaObject.Components[rendermodel(fobj.ID)] as TDFFUnit).txdref <> -1 then
     begin
-      textures := TList.Create;
       textures.Add((GtaObject.Components[(GtaObject.Components[rendermodel(fobj.ID)] as TDFFUnit).txdref] as TTxdUnit).texture);
-      textures.Add((GtaObject.Components[vehicletxd] as TTxdUnit).texture);
-
-      (GtaObject.Components[rendermodel(fobj.ID)] as TDFFUnit).model.glDraw(textures, False, 0, nightmode, false);
     end;
+    textures.Add((GtaObject.Components[vehicletxd] as TTxdUnit).texture);
+
+    (GtaObject.Components[rendermodel(fobj.ID)] as TDFFUnit).model.glDraw(textures, False, 0, nightmode, false);
 
     SwapBuffers(DC);
 
