@@ -139,7 +139,7 @@ begin
             '3': glCompressedTexImage2DARB(GL_TEXTURE_2D, j, GL_COMPRESSED_RGBA_S3TC_DXT3_EXT, texheader.Width, texheader.Height, 0, lw, imgptr);
             else
             begin
-              ShowMessage(texheader.alpha_used);
+              //ShowMessage(texheader.alpha_used);
             end;
           end;
 
